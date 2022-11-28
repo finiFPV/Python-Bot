@@ -5,7 +5,7 @@ import discord
 
 botToken='MTA0NjE3ODQ5MzAzNTE4NDIzMQ.Gc2Me2.I43BKpOGqk5T7GWd0wanNDp_iBaxrO6m230eb4'
 intents = discord.Intents.default()
-obj = discord.Object(id = 1011395727546662962)
+obj = None #discord.Object(id = 1011395727546662962)
 class MyClient(discord.Client):
     async def on_ready(self):
         await commands.sync(guild = obj)
