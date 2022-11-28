@@ -45,7 +45,7 @@ async def ping(interaction):
 async def clear(interaction, ammount: int):
     perms = interaction.permissions
     allowed = perms.manage_messages == True and perms.read_message_history == True
-    if perms.administrator == True or allowed == True or Data().owner == interaction.user.id:
+    if Data().owner == interaction.user.id or perms.administrator == True or allowed == True:
         await interaction.response.send_message(embed = Embed(title = "🗑️ Deleting...", description = f"Deleting: `{ammount}` message(s).", color = 0xeeff00), ephemeral = True)
         await sleep(3)
         await interaction.channel.purge(limit = ammount + 1)
@@ -56,7 +56,7 @@ async def clear(interaction, ammount: int):
 @commands.command(name = "mass_move", description = "Moves everyone from all channels to current channel or specified channel")
 async def mass_move(interaction, channel: VoiceChannel = None):
     perms = interaction.permissions
-    if perms.administrator == True or perms.move_members == True or Data().owner == interaction.user.id:
+    if Data().owner == interaction.user.id or perms.administrator == True or perms.move_members == True:
         if channel is None: channel = interaction.user.voice.channel
         await interaction.response.send_message(embed = Embed(title = "⏬ Moving...", description = f"Moving all server's active members to `{channel.name}`", color = 0xeeff00), ephemeral = True)
         await sleep(3)
