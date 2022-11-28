@@ -5,7 +5,7 @@ import discord
 
 botToken='***REMOVED***'
 intents = discord.Intents.default()
-obj = discord.Object(id = ***REMOVED***)
+obj = None #discord.Object(id = ***REMOVED***)
 class MyClient(discord.Client):
     async def on_ready(self):
         await commands.sync(guild = obj)
