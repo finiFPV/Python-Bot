@@ -1,4 +1,4 @@
-from discord import app_commands, Intents, Client, utils, Embed
+from discord import app_commands, Intents, Client, utils, Embed, VoiceChannel
 from time import monotonic
 from asyncio import sleep
 from data import Data
@@ -45,13 +45,27 @@ async def ping(interaction):
 async def clear(interaction, ammount: int):
     perms = interaction.permissions
     allowed = perms.manage_messages == True and perms.read_message_history == True
-    if perms.administrator == True or allowed == True or Data().owner(interaction) == True:
-        await interaction.response.send_message(embed = Embed(title = "🗑️ Deleting...", description = f"Deleting: `{ammount}` message(s).", color = 0xff0000), ephemeral = True)
+    if perms.administrator == True or allowed == True or Data().owner == interaction.user.id:
+        await interaction.response.send_message(embed = Embed(title = "🗑️ Deleting...", description = f"Deleting: `{ammount}` message(s).", color = 0xeeff00), ephemeral = True)
         await sleep(3)
         await interaction.channel.purge(limit = ammount + 1)
         await interaction.edit_original_response(embed = Embed(title = "✅🗑️ Successful!", description = f"Successfully deleted `{ammount}` message(s).", color = 0x00ff2a))
     else:
-        await interaction.response.send_message(embed = Embed(title = "❌🗑️ Failed!", description = "You don't have: `manage_messages` and/or `read_message_history` permissions", color = 0xff0000))
+        await interaction.response.send_message(embed = Embed(title = "❌🗑️ Failed!", description = "You don't have: `manage_messages` and/or `read_message_history` permission(s)", color = 0xff0000), ephemeral = True)
+
+@commands.command(name = "mass_move", description = "Moves everyone from all channels to current channel or specified channel")
+async def mass_move(interaction, channel: VoiceChannel = None):
+    perms = interaction.permissions
+    if perms.administrator == True or perms.move_members == True or Data().owner == interaction.user.id:
+        if channel is None: channel = interaction.user.voice.channel
+        await interaction.response.send_message(embed = Embed(title = "⏬ Moving...", description = f"Moving all server's active members to `{channel.name}`", color = 0xeeff00), ephemeral = True)
+        await sleep(3)
+        for member in interaction.guild.members:
+            if member.voice is not None:
+                await member.move_to(channel)
+        await interaction.edit_original_response(embed = Embed(title = "✅⏬ Successful!", description = f"Successfully moved all active server's members to `{channel.name}`", color = 0x00ff2a))
+    else:
+        await interaction.response.send_message(embed = Embed(title = "❌⏬ Failed!", description = "You don't have: `move_members` permission", color = 0xff0000), ephemeral = True)
 
 
 client.run(Data().botToken)
