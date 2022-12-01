@@ -1,4 +1,5 @@
-from discord import app_commands, Intents, Client, utils, Embed, VoiceChannel
+from discord import app_commands, Intents, Client, utils, Embed, VoiceChannel, FFmpegPCMAudio
+from typing import Literal
 from time import monotonic
 from asyncio import sleep
 from data import Data
@@ -19,11 +20,10 @@ channels = []
 async def on_voice_state_update(member, before, after):
     if after.channel is not None and after.channel.name == Data().rep_channel:
         category = utils.get(member.guild.categories, name = Data().rep_category)
-        if category is None: category = await member.guild.create_category(Data().rep_category)
+        if category is None: category = category = await member.guild.create_category(Data().rep_category)
         if member.nick is None: name = member.name
         else: name = member.nick
-        channel = await after.channel.clone(name = f"{name}'s channel")
-        await channel.move(beginning = True, category = category)
+        channel = await category.create_voice_channel(f"{name}'s channel")
         await channel.set_permissions(member, manage_channels = True, manage_roles = True)
         channels.append(channel.name)
         await member.move_to(channel)
@@ -54,10 +54,9 @@ async def clear(interaction, ammount: int):
         await interaction.response.send_message(embed = Embed(title = "❌🗑️ Failed!", description = "You don't have: `manage_messages` and/or `read_message_history` permission(s)", color = 0xff0000), ephemeral = True)
 
 @commands.command(name = "mass_move", description = "Moves everyone from all channels to current channel or specified channel")
-async def mass_move(interaction, channel: VoiceChannel = None):
+async def mass_move(interaction, channel: VoiceChannel):
     perms = interaction.permissions
     if Data().owner == interaction.user.id or perms.administrator == True or perms.move_members == True:
-        if channel is None: channel = interaction.user.voice.channel
         await interaction.response.send_message(embed = Embed(title = "⏬ Moving...", description = f"Moving all server's active members to `{channel.name}`", color = 0xeeff00), ephemeral = True)
         await sleep(3)
         for member in interaction.guild.members:
@@ -67,5 +66,36 @@ async def mass_move(interaction, channel: VoiceChannel = None):
     else:
         await interaction.response.send_message(embed = Embed(title = "❌⏬ Failed!", description = "You don't have: `move_members` permission", color = 0xff0000), ephemeral = True)
 
+@commands.command(name = "asian", description = "Plays the selected Asian sound effect in the selected voice channel.")
+async def sound(interaction, channel: VoiceChannel, sound: Literal['Stopid', 'Emotional Damage', 'Failure', 'I Will Send You To Jesus']):
+    await interaction.response.send_message(embed = Embed(title = "🔊 Playing...", description = f"Starting to play `{sound}` in `{channel}`.", color = 0xeeff00), ephemeral = True)
+    voice_client = utils.get(client.voice_clients, guild = interaction.guild)
+    if voice_client is None: voice_client = await channel.connect(self_deaf = True)
+    if voice_client.channel != channel:
+        await voice_client.disconnect()
+        voice_client = await channel.connect(self_deaf = True)
+    sound = sound.replace(' ', '_').lower()
+    if voice_client.is_playing() == True:
+        await interaction.edit_original_response(embed = Embed(title = "❌🔊 Already playing something!", description = "The bot is already playing something. Please try again later!", color = 0xff0000))
+        return
+    else: 
+        voice_client.play(FFmpegPCMAudio(f'./audio/asian/{sound}.mp3'))
+        await interaction.edit_original_response(embed = Embed(title = "✅🔊 Successful!", description = f"Successfully played `{sound}` in `{channel}`.", color = 0x00ff2a))
 
-client.run(Data().botToken)
+@commands.command(name = "indian", description = "Plays the selected Indian sound effect in the selected voice channel.")
+async def sound(interaction, channel: VoiceChannel, sound: Literal['Hello Your Computer Has Virus', 'Indian Song']):
+    await interaction.response.send_message(embed = Embed(title = "🔊 Playing...", description = f"Starting to play `{sound}` in `{channel}`.", color = 0xeeff00), ephemeral = True)
+    voice_client = utils.get(client.voice_clients, guild = interaction.guild)
+    if voice_client is None: voice_client = await channel.connect(self_deaf = True)
+    if voice_client.channel != channel:
+        await voice_client.disconnect()
+        voice_client = await channel.connect(self_deaf = True)
+    sound = sound.replace(' ', '_').lower()
+    if voice_client.is_playing() == True:
+        await interaction.edit_original_response(embed = Embed(title = "❌🔊 Already playing something!", description = "The bot is already playing something. Please try again later!", color = 0xff0000))
+        return
+    else:
+        voice_client.play(FFmpegPCMAudio(f'./audio/indian/{sound}.mp3'))
+        await interaction.edit_original_response(embed = Embed(title = "✅🔊 Successful!", description = f"Successfully played `{sound}` in `{channel}`.", color = 0x00ff2a))
+
+client.run(Data().botToken, log_level = 0)
