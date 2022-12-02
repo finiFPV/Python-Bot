@@ -62,6 +62,24 @@ class Admin:
         else:
             await interaction.response.send_message(embed = Embed(title = "❌⏬ Failed!", description = "You don't have: `move_members` permission", color = 0xff0000), ephemeral = True)
 
+    @staticmethod
+    async def setup(interaction):
+        if Data.Id.owner == interaction.user.id or interaction.permissions.administrator == True:
+            await interaction.response.send_message(embed = Embed(title="⚙️ Setting Up...", description="Starting to set up the server.", color = 0xeeff00), ephemeral = True)
+            changes_made = False
+            embed = Embed(title = "✅⚙️ Successful!", description = f"Setting up done! Changes made are:", color = 0x00ff2a)
+            if utils.get(interaction.guild.channels, name = Data.Private_Channel.channel) is None:
+                await interaction.guild.create_voice_channel(Data.Private_Channel.channel)
+                changes_made = True
+                embed.add_field(name = "Created voice channel:", value = Data.Private_Channel.channel)
+            await sleep(3)
+            if changes_made == False:
+                await interaction.edit_original_response(embed = Embed(title = "✅⚙️ Successful!", description = f"No setting up was needed. Everything is already set up.", color = 0x00ff2a))
+            else:
+                await interaction.edit_original_response(embed = embed)
+        else:
+            await interaction.response.send_message(embed = Embed(title="❌⚙️ Failed!", description="You don't have: `administrator` permission!", color = 0xff0000), ephemeral = True)
+
 class Info:
     @staticmethod
     async def ping(interaction):
