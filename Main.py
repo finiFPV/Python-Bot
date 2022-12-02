@@ -1,8 +1,9 @@
-from discord import app_commands, Intents, Client, utils, Embed, VoiceChannel, FFmpegPCMAudio
+from discord import app_commands, Intents, Client, utils, Embed, VoiceChannel
 from typing import Literal
 from time import monotonic
 from asyncio import sleep
 from data import Data
+from commands import Audio
 
 intents = Intents.default()
 class MyClient(Client):
@@ -68,34 +69,10 @@ async def mass_move(interaction, channel: VoiceChannel):
 
 @commands.command(name = "asian", description = "Plays the selected Asian sound effect in the selected voice channel.")
 async def sound(interaction, channel: VoiceChannel, sound: Literal['Stopid', 'Emotional Damage', 'Failure', 'I Will Send You To Jesus']):
-    await interaction.response.send_message(embed = Embed(title = "🔊 Playing...", description = f"Starting to play `{sound}` in `{channel}`.", color = 0xeeff00), ephemeral = True)
-    voice_client = utils.get(client.voice_clients, guild = interaction.guild)
-    if voice_client is None: voice_client = await channel.connect(self_deaf = True)
-    if voice_client.channel != channel:
-        await voice_client.disconnect()
-        voice_client = await channel.connect(self_deaf = True)
-    sound = sound.replace(' ', '_').lower()
-    if voice_client.is_playing() == True:
-        await interaction.edit_original_response(embed = Embed(title = "❌🔊 Already playing something!", description = "The bot is already playing something. Please try again later!", color = 0xff0000))
-        return
-    else: 
-        voice_client.play(FFmpegPCMAudio(f'./audio/asian/{sound}.mp3'))
-        await interaction.edit_original_response(embed = Embed(title = "✅🔊 Successful!", description = f"Successfully played `{sound}` in `{channel}`.", color = 0x00ff2a))
+    await Audio().engine(interaction, client, channel, sound, 'asian')
 
 @commands.command(name = "indian", description = "Plays the selected Indian sound effect in the selected voice channel.")
 async def sound(interaction, channel: VoiceChannel, sound: Literal['Hello Your Computer Has Virus', 'Indian Song']):
-    await interaction.response.send_message(embed = Embed(title = "🔊 Playing...", description = f"Starting to play `{sound}` in `{channel}`.", color = 0xeeff00), ephemeral = True)
-    voice_client = utils.get(client.voice_clients, guild = interaction.guild)
-    if voice_client is None: voice_client = await channel.connect(self_deaf = True)
-    if voice_client.channel != channel:
-        await voice_client.disconnect()
-        voice_client = await channel.connect(self_deaf = True)
-    sound = sound.replace(' ', '_').lower()
-    if voice_client.is_playing() == True:
-        await interaction.edit_original_response(embed = Embed(title = "❌🔊 Already playing something!", description = "The bot is already playing something. Please try again later!", color = 0xff0000))
-        return
-    else:
-        voice_client.play(FFmpegPCMAudio(f'./audio/indian/{sound}.mp3'))
-        await interaction.edit_original_response(embed = Embed(title = "✅🔊 Successful!", description = f"Successfully played `{sound}` in `{channel}`.", color = 0x00ff2a))
+    await Audio().engine(interaction, client, channel, sound, 'indian')
 
 client.run(Data().botToken, log_level = 0)
