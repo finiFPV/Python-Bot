@@ -13,6 +13,9 @@ class Audio:
 
     async def engine(self, interaction, client, channel, sound, type):
         if Data.Other.music_enabled == True:
+            if type not in Data.Other.music_types_allowed and Data.Id.owner != interaction.user.id:
+                await interaction.response.send_message(embed = Embed(title = "❌🔊 Not authorized!", description = "You are not the authorized to play this type of audio!", color = 0xff0000), ephemeral = True)
+                return
             if Data.Id.owner == interaction.user.id or interaction.user.id in Data.Id.authorized: mode = 0
             elif interaction.user.id in Data.Id.uno_reversed_users:
                 mode = 1
@@ -31,6 +34,7 @@ class Audio:
             elif mode == 1:
                 for sound in ['i_will_send_you_to_jesus', 'failure', 'emotional_damage', 'stopid']:
                     await self.play_async(voice_client, sound, 'asian')
+                await self.play_async(voice_client, 'skill_issue', 'other')
             await voice_client.disconnect()
             await interaction.edit_original_response(embed = Embed(title = "✅🔊 Successful!", description = f"Successfully played `{sound}` in `{channel}`.", color = 0x00ff2a))
         else: 
@@ -93,6 +97,9 @@ class Features:
     @staticmethod
     async def private_channel(member, before, after):
         if after.channel is not None and after.channel.name == Data.Private_Channel.channel:
+            if member.id in Data.Id.uno_reversed_users:
+                await member.voice_client.disconnect()
+                return
             category = utils.get(member.guild.categories, name = Data.Private_Channel.category)
             if category is None: category = category = await member.guild.create_category(Data.Private_Channel.category)
             if member.nick is None: name = member.name

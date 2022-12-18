@@ -11,6 +11,7 @@ class MyClient(Client):
         print(f'Commands synced!')
 client = MyClient(intents = Intents.default())
 commands = app_commands.CommandTree(client)
+Audio = Audio()
 
 
 #Events
@@ -35,7 +36,7 @@ async def sound(interaction, channel: VoiceChannel, sound: Literal['Stopid', 'Em
 async def sound(interaction, channel: VoiceChannel, sound: Literal['Hello Your Computer Has Virus', 'Indian Song']): await Audio.engine(interaction, client, channel, sound, 'indian')
 
 @commands.command(name = "sound_effect", description = "Plays the selected sound effect in the selected voice channel.")
-async def sound(interaction, channel: VoiceChannel, sound: Literal['Skill Issue']): await Audio.engine(interaction, client, channel, sound, 'other')
+async def sound(interaction, channel: VoiceChannel, sound: Literal['Skill Issue', 'Ah', 'Sus Song', "Sus Sound Effect"]): await Audio.engine(interaction, client, channel, sound, 'other')
 
 @commands.command(name = "setup", description = "Sets up everything for the server for the bot to work properly.")
 async def setup(interaction): await Admin.setup(interaction)
