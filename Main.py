@@ -1,5 +1,6 @@
 from discord import app_commands, Intents, Client, VoiceChannel
 from feathures import Audio, Admin, Info, Features
+from discord.ext import tasks
 from typing import Literal
 from data import Data
 
@@ -9,9 +10,16 @@ class MyClient(Client):
         print(f'Logged on as {self.user}!')
         await commands.sync()
         print(f'Commands synced!')
+        btd6_codes_purge.start()
+        print(f'BTD6 cdoes purger started')
 client = MyClient(intents = Intents.default())
 commands = app_commands.CommandTree(client)
 Audio = Audio()
+
+
+#Tasks
+@tasks.loop(minutes = 15.0)
+async def btd6_codes_purge(): await Features.btd6_codes_purge(client)
 
 
 #Events

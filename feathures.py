@@ -95,6 +95,12 @@ class Info:
 
 class Features:
     @staticmethod
+    async def btd6_codes_purge(client):
+        for guild in client.guilds:
+            for channel in guild.text_channels:
+                if channel.name == Data.BTD6.code_channel: await channel.purge()
+
+    @staticmethod
     async def private_channel(member, before, after):
         if after.channel is not None and after.channel.name == Data.Private_Channel.channel:
             if member.id in Data.Id.uno_reversed_users:
