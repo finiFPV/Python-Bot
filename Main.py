@@ -11,7 +11,7 @@ class MyClient(Client):
         await commands.sync()
         print(f'Commands synced!')
         btd6_codes_purge.start()
-        print(f'BTD6 cdoes purger started')
+        print(f'BTD6 codes purger started')
 client = MyClient(intents = Intents.default())
 commands = app_commands.CommandTree(client)
 Audio = Audio()
