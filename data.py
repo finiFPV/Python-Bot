@@ -1,8 +1,8 @@
 class Data:
     class Id:
-        owner = ***REMOVED***
-        uno_reversed_users = [***REMOVED***, ***REMOVED***]
-        authorized = [***REMOVED***]
+        owner = None
+        uno_reversed_users = []
+        authorized = []
     class Private_Channel:
         channels = []
         category = 'Private Channels'
@@ -12,4 +12,4 @@ class Data:
     class Other:
         music_enabled = False
         music_types_allowed = ['indian']
-        bot_token='***REMOVED***'
+        bot_token=''
